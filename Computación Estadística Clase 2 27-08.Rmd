@@ -1,0 +1,66 @@
+---
+title: "Computación Estadistica clase 2 27/08"
+author: "Sergio A Hernández"
+date: "27/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+# Clase 2 de Computación Estadística
+
+ctrl+alt+i
+
+```{r}
+set.seed(2022)
+options(digits=3)
+germin<-rnorm(20,80,3);germin
+hist(germin,col="lightblue", main="Histograma de germinación", xlim=c(60,100),ylim=c(0,5), ylab="Frecuencia")
+```
+Modelo de diseño
+$$y_{ijk}=\mu+\tau_i+\beta_j+(\tau\beta)_{ij}+\epsilon_{ijk}$$
+Creando una matrix
+
+$$
+A_{m,n} = 
+\begin{pmatrix}
+8 & 5 & 4 & -1 \\
+5 & 7 & 11 & -5 \\
+6  & 4  & -3 & -2  \\
+0 & -1 & 7 & 6 
+\end{pmatrix}
+$$
+###Sistema de ecuaciones
+
+
+$$
+\left.
+2x + y  = 1 \atop
+x + y = 4
+\right\}
+$$
+
+### Integrales en Latex
+$$
+\begin{equation}
+y=\int_{x=0}^{x=2\pi+10}f(x)dx
+\end{equation}
+$$
+$$ \begin{multline*}
+p(x)=3x^6+14x^5y+590x^4y^2+19x^3y^3-12x^2y^4-12xy^5+2xy^6-a^3b^3
+\end{multline*}
+$$
+### Funciones
+$$
+mi.function<- function(arg1,arg2,arg3){
+sentencias
+return (objects)
+}
+$$
+
+```{r}
+mi.convertidor<- function(tc){tc+273.15}
