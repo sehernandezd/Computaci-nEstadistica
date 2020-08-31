@@ -1,0 +1,372 @@
+---
+title: "Clase 03 31-08 Computacion E."
+author: "Sergio A Hernández"
+date: "31/8/2020"
+output: html_document
+---
+
+
+### Estandarizacion
+
+```{r}
+set.seed(123)
+#Unidades en gramos
+# aceite del cultivo de limonaria de cc de aceite
+acc=rnorm(120,5,0.25)
+hist(acc, col='orange', breaks=10)
+rug(acc)
+
+# Viscosidad
+vis=runif(120,2,3)
+hist(vis,col='orange', ylim=c(0,30), main='Viscosidad')
+
+#graffito de dispersion
+plot(acc,vis, pch=19, cex=0.8, main='contenido de aceite vs viscosidad (Pascal/seg)', ylab='Viscosidad',xlab='Contenido de aceite')
+
+
+```
+
+## Distibuciones de probabilidad usados
+### Normal 
+
+Genera datos en forma de campana 
+
+En r> $norm$, se antepone la letra $r$ para indicar $random$, e es decir, generar datos aleatorios normales.
+
+### Uniforme
+
+Genera datos en forma horizontal aproxiamdamente(), frecuencia tiende a ser la misma. Ningun valor predomina sobre otro
+
+en R $unif$, se anmte poner la letra $r$ para indicar $random$, e es decir, generar datos aleatorios uniformes.
+
+
+Los gráficos que presentan unidades diferentes en los ejes son muy engañosos
+
+
+
+####Punto Z de estandarización
+
+$$Z=\frac{x-\mu_x}{\sigma_x}$$
+```{r}
+#Función para estandarizar
+estandarizacion<-function(x)
+    {
+     me=mean(x);me
+     desv=sd(x);desv
+     z=(x-me)/desv
+     return(z)
+    }
+# Estandarizando aceite
+acc_z=estandarizacion(acc)
+# Estandarizando viscozidad
+vis_z=estandarizacion(vis)
+par(mfrow=c(2,2))
+hist(acc,main= 'Acc no estandarizado')
+hist(acc_z,main= 'Acc  estandarizado')
+hist(vis,main='vis no estandarizado')
+hist(vis_z,main= 'vis no estandarizado')
+
+
+```
+Estandarizar> Hace que la nmedia de la variable sea 0
+
+```{r}
+(med_acc=mean(acc))
+(desv_acc=sd(acc))
+(med_acc_z=mean(acc_z))
+(desv_acc=sd(acc_z))
+```
+Estandarizar implica que la desviacion estandar sea 1 y el promedio sea 0 con el punto z.
+
+
+```{r}
+par(mfrow=c(1,2))
+
+plot(acc_z,vis_z,pch=19,cex=0.8, main='Estandarizado')
+points( x=mean(acc_z), y=mean=(vis_z), col='red',pch=19)
+
+plot(acc,vis,pch=19,cex=0.8, main='Sin Estandarizar')
+points( x=mean(acc), y=mean=(vis),col='blue',pch=19)
+
+```
+## Correlacion de Pearson entre aceite y viscosidad
+La dispersión se mantiene sin embargo cambian los ejes
+
+```{r}
+#Sin Estandarizar
+(cr=cor(acc,vis,method='pearson'))
+#Estandarizado
+(cr=cor(acc_z,vis_z,method='pearson'))
+### Implica que elgráfico es el mismo
+```
+
+Es una medida de asocaicion lineal, cuando la correlacion es 1 es una correlacion perfecta, esto indica que una variable esta relacionada estadisticamente con la otra. Oscila entre -1 y 1
+
+
+```{r}
+# Biomasa de Tuberculos
+biom=sort(rnorm(48,3,0.25))
+tiempo=sort(rnorm(48,30,2))# Pesando los tuberculos
+plot(biom,tiempo)
+cor(biom,tiempo)
+
+```
+
+#### Preguntas para entender el fenómeno
+
+¿Tiene sentido la relación entre la biomasa y el tiempo de peso de los tuberculos?
+
+1. Pareciera tener sentido
+2. Según Descartes en el Y dbe ir la variable dependiente y en X la variable independiente.
+ - pARA ESTE EJEMPLO EL TIEMPO DEPENDE DE LA BIOMASA
+3. el COEFICIENTE DE CORRELACIÓN ES ÚTIL SOLAMENTE EN COMPORTAMIENTOS LINEALES
+
+
+```{r}
+set.seed(1234)
+# pESO DE NIÑOS AL NACER
+PESO=sort(rnorm(48,3,0.25))
+hist(PESO, col='orange')
+rug(acc)
+#nUMERO DE CIGUEÑAS CONTADAS
+
+num=(sort(rnorm(48,30,2)))
+plot(x=PESO,y=num, ylim=c(0,30),xlim=c(0,35))
+(cor(PESO,num))
+```
+```{r}
+set.seed(1234)
+#Nitrogeno en el tejido ppm
+n=sort(rnorm(120,10,0.8))# 
+#Fosforo en el suelo ppm
+p=sort(rnorm(120,0.1,0.02))
+
+plot(n,p,pch=19,cex=0.8,col='Blue')
+
+# Altisima correlación pero están en diferentes escalas ahora vamos a estandarizar
+
+p_estand=estandarizacion(p)
+n_estand=estandarizacion(n)
+
+#plot(n_estand,p_estand, pch=19, cex=0.6, xlim=c(-3,3), ylim=c(-3,3)))
+```
+
+
+```{r}
+plot(n,p,pch=19,cex=0.6, main='sin estandarizar', xlim=c(0,12), ylim=c(0,12))
+```
+### Calculando el angulo que forma una linea recta con respecto a su horizontal
+
+Regression lineal simple
+```{r}
+mod=lm(p~n)
+plot(n,p,pch=19,cex=0.6)
+
+abline(mod)# Recta que mejor se ajusta a los datos
+
+
+```
+
+$$y=mx+b$$
+
+```{r}
+summary(mod)
+```
+
+```{r}
+# Coeficiente de la recta
+b=-0.164
+m=0.0265
+
+# m es la tangente de theta
+# tangente 0= 0.0265
+# arctang(0.0265)
+```
+
+$$
+Pendiente~es~igual~a~tan(\theta)
+$$
+
+$$
+tan(\theta)= m
+$$
+$$
+\theta=arctan(m)
+$$
+
+```{r}
+(ang_r=atan(m))
+(ang_g=ang_r*180/pi)
+# El verdadero angulo me dice que es 2 grados
+```
+
+#### Tarea
+1. Registrar datos de temperatura y datos de húmedad relativa, organizarlos 
+2. Grafico sin estandarizar y gráfico estandarizado
+3. Determinar si el gráfico es realista o engañoso.
+4. Gráficar todos los modelos de crecimiento
+
+```{r}
+# Modelos no lineales
+library(growthmodels)
+#Graficar los modelos de growthmodels
+
+growth <- blumberg(0:100, 10, 2, 0.5)
+# Calculate inverse function
+time <- blumberg.inverse(growth, 12, 2, 0.5)
+par(bg='lightblue', fg='darkred')# propiedades de edicion
+plot(growth, pch=19,cex=0.5, main='modelo de crecimiento Blumberg', xlab='Time', type='l')
+grid(nx = 10,ny = 10,lwd = 2,col = 'gray')
+plot(time)
+```
+### Correlacion de Pearson y Spearman
+```{r}
+(cor_p=cor(growth, 0:100, method='pearson'))#EL modelo es para lineales
+(cor_p=cor(growth, 0:100, method='spearman'))# El modelo no es lineal
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
